@@ -17,7 +17,7 @@ public class CustomerService {
 
     public Customer saveCustomer(String strCustomerName, String strCustomerDocument, DocumentType documentType) throws CustomerException {
 
-        Customer customer = null;
+        Customer customer;
 
         if (documentType.equals(DocumentType.CPF)){
             customer = new CustomerPF(strCustomerName, strCustomerDocument);
@@ -25,12 +25,14 @@ public class CustomerService {
             customerValidation = new CustomerPFValidation();
             customerValidation.validateDocument(customer);
             customerValidation.formatDocument(customer);
-        } else{
+        } else if (documentType.equals(DocumentType.CNPJ)){
             customer = new CustomerPJ(strCustomerName, strCustomerDocument);
 
             customerValidation = new CustomerPJValidation();
             customerValidation.validateDocument(customer);
             customerValidation.formatDocument(customer);
+        } else{
+            throw new CustomerException("Error: Document type is invalid.");
         }
 
         customer.setId(generateCustomerId());

@@ -15,11 +15,15 @@ class SavingsAccountService implements AccountCycle<SavingsAccount, Customer>{
     SavingsAccount savingsAccount;
     @Override
     public SavingsAccount openAccount(String customerDocument, DocumentType documentType) throws AccountException, CustomerException {
-        Integer accountID = generateAccountId();
+        if (documentType.equals(DocumentType.CPF)) {
+            Integer accountID = generateAccountId();
 
-        savingsAccount = new SavingsAccount();
-        savingsAccount.setId(accountID);
-        updateBalance(savingsAccount, new BigDecimal(0.00));
+            savingsAccount = new SavingsAccount();
+            savingsAccount.setId(accountID);
+            updateBalance(savingsAccount, new BigDecimal(0.00));
+        }else {
+            throw new CustomerException("A Customer PJ can't have a Savings Account");
+        }
 
         return savingsAccount;
     }

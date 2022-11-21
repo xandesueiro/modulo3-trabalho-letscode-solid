@@ -21,20 +21,11 @@ public class AccountService <T extends Account, U extends Customer>{
         CheckingAccount checkingAccount = null;
         Customer customer = null;
 
-        switch (documentType){
-            case CPF -> {
-                AccountCycle accountCycle = new CheckingAccountService();
-                checkingAccount = (CheckingAccount) accountCycle.openAccount(customerDocument, documentType);
+        AccountCycle accountCycle = new CheckingAccountService();
+        checkingAccount = (CheckingAccount) accountCycle.openAccount(customerDocument, documentType);
 
-                customer = customerService.saveCustomer(customerName, customerDocument, documentType);
-                customer.addAccount(checkingAccount);
-
-            }
-            case CNPJ -> {
-
-            }
-            default -> throw new AccountException("Error: document type not defined");
-        }
+        customer = customerService.saveCustomer(customerName, customerDocument, documentType);
+        customer.addAccount(checkingAccount);
 
         return (U) customer;
     }
@@ -90,6 +81,9 @@ public class AccountService <T extends Account, U extends Customer>{
         sb.append("------------------------------------------ Resumo: Contas do cliente  ------------------------------------------\n");
         sb.append("------------------------------------------ Summary: Customer account  ------------------------------------------\n");
         sb.append("Customer name         : ").append(customer.getName()).append("\n");
+
+        String formatedDocument = customer instanceof CustomerPF ? ((CustomerPF) customer).getCpfFormatted() : ((CustomerPJ) customer).getCnpjFormatted();
+        sb.append("Document              : ").append(formatedDocument).append("\n");
 
         for (Map.Entry<Integer, Account> accounts : customer.getAccounts().entrySet()) {
             Account varAccount = accounts.getValue();
