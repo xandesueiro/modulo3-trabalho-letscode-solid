@@ -1,26 +1,42 @@
 package br.com.letscode.trabalho.service;
 
-import br.com.letscode.trabalho.entity.Account;
+
 import br.com.letscode.trabalho.entity.Customer;
+import br.com.letscode.trabalho.entity.CustomerPF;
 import br.com.letscode.trabalho.entity.SavingsAccount;
 import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.AccountException;
 import br.com.letscode.trabalho.exception.CustomerException;
 
 import java.math.BigDecimal;
-import java.util.Random;
 
-public class SavingsAccountService implements AccountCycle<SavingsAccount, Customer>{
+class SavingsAccountService implements AccountCycle<SavingsAccount, Customer>{
 
-
+    SavingsAccount savingsAccount;
     @Override
     public SavingsAccount openAccount(String customerDocument, DocumentType documentType) throws AccountException, CustomerException {
-        return null;
+        Integer accountID = generateAccountId();
+
+        savingsAccount = new SavingsAccount();
+        savingsAccount.setId(accountID);
+        updateBalance(savingsAccount, new BigDecimal(0.00));
+
+        return savingsAccount;
     }
 
     @Override
-    public SavingsAccount openAccount(Customer customer, DocumentType documentType, BigDecimal balanceValue) throws AccountException, CustomerException {
-        return null;
+    public SavingsAccount openAccount(Customer customer, BigDecimal balanceValue) throws CustomerException {
+        if (customer instanceof CustomerPF) {
+            Integer accountID = generateAccountId();
+
+            savingsAccount = new SavingsAccount();
+            savingsAccount.setId(accountID);
+            updateBalance(savingsAccount, balanceValue);
+        }else {
+            throw new CustomerException("A Customer PJ can't have a Savings Account");
+        }
+
+        return savingsAccount;
     }
 
     @Override
@@ -29,7 +45,7 @@ public class SavingsAccountService implements AccountCycle<SavingsAccount, Custo
     }
 
     @Override
-    public void investment(Customer customer, BigDecimal investmentValue) throws AccountException {
+    public void invest(Customer customer, BigDecimal investmentValue) throws AccountException {
 
     }
 

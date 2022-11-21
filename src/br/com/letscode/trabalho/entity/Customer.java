@@ -1,6 +1,7 @@
 package br.com.letscode.trabalho.entity;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 
 public abstract class Customer {
@@ -9,7 +10,7 @@ public abstract class Customer {
     private String name;
     private String document;
 
-    private HashMap<Integer, Account> accounts;
+    private LinkedHashMap<Integer, Account> accounts;
 
     public static final int TOTAL_AVAIABLE_IDS = 100;
 
@@ -22,6 +23,10 @@ public abstract class Customer {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -30,7 +35,7 @@ public abstract class Customer {
         return document;
     }
 
-    public HashMap<Integer, Account> getAccounts() {
+    public LinkedHashMap<Integer, Account> getAccounts() {
         return accounts;
     }
 
@@ -39,12 +44,20 @@ public abstract class Customer {
         return account;
     }
 
+    public void addAccount(Account account){
+        if (this.getAccounts() == null){
+            this.accounts = new LinkedHashMap<>();
+        }
+        this.getAccounts().put(account.getId(), account);
+    }
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Client{");
+        final StringBuilder sb = new StringBuilder("Customer{");
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", document='").append(document).append('\'');
+        sb.append(", accounts=").append(accounts);
         sb.append('}');
         return sb.toString();
     }

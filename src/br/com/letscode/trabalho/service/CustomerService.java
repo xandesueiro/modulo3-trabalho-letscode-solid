@@ -1,12 +1,44 @@
 package br.com.letscode.trabalho.service;
 
 import br.com.letscode.trabalho.entity.Customer;
+import br.com.letscode.trabalho.entity.CustomerPF;
+import br.com.letscode.trabalho.entity.CustomerPJ;
 import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.CustomerException;
+import br.com.letscode.trabalho.service.validation.CustomerPFValidation;
+import br.com.letscode.trabalho.service.validation.CustomerPJValidation;
+import br.com.letscode.trabalho.service.validation.CustomerValidation;
 
-public class CustomerService implements CustomerCycle<Customer>{
-    @Override
+import java.util.Random;
+
+public class CustomerService {
+
+    CustomerValidation customerValidation = null;
+
     public Customer saveCustomer(String strCustomerName, String strCustomerDocument, DocumentType documentType) throws CustomerException {
-        return null;
+
+        Customer customer = null;
+
+        if (documentType.equals(DocumentType.CPF)){
+            customer = new CustomerPF(strCustomerName, strCustomerDocument);
+
+            customerValidation = new CustomerPFValidation();
+            customerValidation.validateDocument(customer);
+            customerValidation.formatDocument(customer);
+        } else{
+            customer = new CustomerPJ(strCustomerName, strCustomerDocument);
+
+            customerValidation = new CustomerPJValidation();
+            customerValidation.validateDocument(customer);
+            customerValidation.formatDocument(customer);
+        }
+
+        customer.setId(generateCustomerId());
+        return customer;
+    }
+
+    public Integer generateCustomerId(){
+        Random random = new Random();
+        return random.nextInt(Customer.TOTAL_AVAIABLE_IDS);
     }
 }

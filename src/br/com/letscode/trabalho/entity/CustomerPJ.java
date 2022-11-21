@@ -12,7 +12,7 @@ public class CustomerPJ extends Customer {
         return this.cnpjFormatted;
     }
 
-    public void setCpfFormatted(String cnpjFormatted) {
+    public void setCnpjFormatted(String cnpjFormatted) {
         this.cnpjFormatted = cnpjFormatted;
     }
 

@@ -1,5 +1,6 @@
 package br.com.letscode.trabalho.service;
 
+import br.com.letscode.trabalho.entity.CheckingAccount;
 import br.com.letscode.trabalho.entity.Customer;
 import br.com.letscode.trabalho.entity.InvestimentAccount;
 import br.com.letscode.trabalho.enums.DocumentType;
@@ -8,16 +9,30 @@ import br.com.letscode.trabalho.exception.CustomerException;
 
 import java.math.BigDecimal;
 
-public class InvestmentAccountService implements AccountCycle<InvestimentAccount, Customer>{
+class InvestmentAccountService implements AccountCycle<InvestimentAccount, Customer>{
+
+    InvestimentAccount investimentAccount;
 
     @Override
     public InvestimentAccount openAccount(String customerDocument, DocumentType documentType) throws AccountException, CustomerException {
-        return null;
+        Integer accountID = generateAccountId();
+
+        investimentAccount = new InvestimentAccount();
+        investimentAccount.setId(accountID);
+        updateBalance(investimentAccount, new BigDecimal(0.00));
+
+        return investimentAccount;
     }
 
     @Override
-    public InvestimentAccount openAccount(Customer customer, DocumentType documentType, BigDecimal balanceValue) throws AccountException, CustomerException {
-        return null;
+    public InvestimentAccount openAccount(Customer customer, BigDecimal balanceValue) throws AccountException, CustomerException {
+        Integer accountID = generateAccountId();
+
+        investimentAccount = new InvestimentAccount();
+        investimentAccount.setId(accountID);
+        updateBalance(investimentAccount, balanceValue);
+
+        return investimentAccount;
     }
 
     @Override
@@ -26,7 +41,7 @@ public class InvestmentAccountService implements AccountCycle<InvestimentAccount
     }
 
     @Override
-    public void investment(Customer customer, BigDecimal investmentValue) throws AccountException {
+    public void invest(Customer customer, BigDecimal investmentValue) throws AccountException {
 
     }
 

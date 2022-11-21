@@ -8,17 +8,31 @@ import br.com.letscode.trabalho.exception.CustomerException;
 
 import java.math.BigDecimal;
 
-public class CheckingAccountService implements AccountCycle<CheckingAccount, Customer>{
+class CheckingAccountService implements AccountCycle<CheckingAccount, Customer>{
 
+    CheckingAccount checkingAccount = null;
 
     @Override
     public CheckingAccount openAccount(String customerDocument, DocumentType documentType) throws AccountException, CustomerException {
-        return null;
+
+        Integer accountID = generateAccountId();
+
+        checkingAccount = new CheckingAccount();
+        checkingAccount.setId(accountID);
+        updateBalance(checkingAccount, new BigDecimal(0.00));
+
+        return checkingAccount;
     }
 
     @Override
-    public CheckingAccount openAccount(Customer customer, DocumentType documentType, BigDecimal balanceValue) throws AccountException, CustomerException {
-        return null;
+    public CheckingAccount openAccount(Customer customer, BigDecimal balanceValue) throws AccountException, CustomerException {
+        Integer accountID = generateAccountId();
+
+        checkingAccount = new CheckingAccount();
+        checkingAccount.setId(accountID);
+        updateBalance(checkingAccount, balanceValue);
+
+        return checkingAccount;
     }
 
     @Override
@@ -27,7 +41,7 @@ public class CheckingAccountService implements AccountCycle<CheckingAccount, Cus
     }
 
     @Override
-    public void investment(Customer customer, BigDecimal investmentValue) throws AccountException {
+    public void invest(Customer customer, BigDecimal investmentValue) throws AccountException {
 
     }
 
@@ -40,5 +54,7 @@ public class CheckingAccountService implements AccountCycle<CheckingAccount, Cus
     public void transfer(Customer customer, BigDecimal investmentValue) throws AccountException {
 
     }
+
+
 
 }

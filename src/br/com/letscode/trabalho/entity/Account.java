@@ -17,9 +17,16 @@ public abstract class Account {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public BigDecimal getAccountBalance() {
         return accountBalance;
+    }
+
+    public void setAccountBalance(BigDecimal accountBalance) {
+        this.accountBalance = accountBalance;
     }
 
     public String getAccountLabel() {
