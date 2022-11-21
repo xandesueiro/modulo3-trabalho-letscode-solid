@@ -30,15 +30,12 @@ class SavingsAccountService implements AccountCycle<SavingsAccount, CustomerPF>{
 
     @Override
     public SavingsAccount openAccount(CustomerPF customer, BigDecimal balanceValue) throws CustomerException {
-        if (customer instanceof CustomerPF) {
-            Integer accountID = generateAccountId();
 
-            savingsAccount = new SavingsAccount();
-            savingsAccount.setId(accountID);
-            updateBalance(savingsAccount, balanceValue);
-        }else {
-            throw new CustomerException("A Customer PJ can't have a Savings Account");
-        }
+        Integer accountID = generateAccountId();
+
+        savingsAccount = new SavingsAccount();
+        savingsAccount.setId(accountID);
+        updateBalance(savingsAccount, balanceValue);
 
         return savingsAccount;
     }
