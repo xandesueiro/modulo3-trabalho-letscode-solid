@@ -10,7 +10,7 @@ import br.com.letscode.trabalho.exception.CustomerException;
 
 import java.math.BigDecimal;
 
-class SavingsAccountService implements AccountCycle<SavingsAccount, Customer>{
+class SavingsAccountService implements AccountCycle<SavingsAccount, CustomerPF>{
 
     SavingsAccount savingsAccount;
     @Override
@@ -29,7 +29,7 @@ class SavingsAccountService implements AccountCycle<SavingsAccount, Customer>{
     }
 
     @Override
-    public SavingsAccount openAccount(Customer customer, BigDecimal balanceValue) throws CustomerException {
+    public SavingsAccount openAccount(CustomerPF customer, BigDecimal balanceValue) throws CustomerException {
         if (customer instanceof CustomerPF) {
             Integer accountID = generateAccountId();
 
@@ -44,22 +44,22 @@ class SavingsAccountService implements AccountCycle<SavingsAccount, Customer>{
     }
 
     @Override
-    public void deposit(Customer customer, BigDecimal depositValue) throws AccountException {
+    public void deposit(CustomerPF customer, BigDecimal depositValue) throws AccountException {
 
     }
 
     @Override
-    public void invest(Customer customer, BigDecimal investmentValue) throws AccountException {
+    public void invest(CustomerPF customer, BigDecimal investmentValue) throws AccountException {
 
     }
 
     @Override
-    public void withdraw(Customer customer, BigDecimal investmentValue) throws AccountException {
+    public void withdraw(CustomerPF customer, BigDecimal investmentValue) throws AccountException {
 
     }
 
     @Override
-    public void transfer(Customer customer, BigDecimal investmentValue) throws AccountException {
+    public void transfer(CustomerPF customer, BigDecimal investmentValue) throws AccountException {
 
     }
 

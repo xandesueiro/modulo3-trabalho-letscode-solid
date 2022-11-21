@@ -37,26 +37,20 @@ public class AccountService <T extends Account, U extends Customer>{
             case CHECKING_ACCOUNT -> {
                 AccountCycle<CheckingAccount, Customer> accountCycle = new CheckingAccountService();
                 account = accountCycle.openAccount(customer, balanceValue);
-
                 customer.addAccount(account);
-
             }
             case SAVINGS_ACCOUNT -> {
-                AccountCycle<SavingsAccount, Customer> accountCycle = new SavingsAccountService();
-                account = accountCycle.openAccount(customer, balanceValue);
-
+                AccountCycle<SavingsAccount, CustomerPF> accountCycle = new SavingsAccountService();
+                account = accountCycle.openAccount((CustomerPF) customer, balanceValue);
                 customer.addAccount(account);
             }
             case INVESTIMENT_ACCOUNT -> {
                 AccountCycle accountCycle = new InvestmentAccountService();
                 account = accountCycle.openAccount(customer, balanceValue);
-
                 customer.addAccount(account);
             }
             default -> throw new AccountException("Error: account type not defined");
-
         }
-
         return (U) customer;
     }
 
