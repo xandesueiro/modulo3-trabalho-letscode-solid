@@ -4,7 +4,6 @@ import br.com.letscode.trabalho.entity.CheckingAccount;
 import br.com.letscode.trabalho.entity.CustomerPF;
 import br.com.letscode.trabalho.exception.AccountException;
 import br.com.letscode.trabalho.exception.CustomerException;
-import br.com.letscode.trabalho.service.validation.AccountValidation;
 
 import java.math.BigDecimal;
 

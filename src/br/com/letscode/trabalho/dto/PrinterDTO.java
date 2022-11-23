@@ -14,9 +14,6 @@ import java.util.Objects;
 
 public class PrinterDTO<T extends Account, U extends Customer> {
 
-    AccountService accountService = new AccountService();
-    AccountServicePJ accountServicePJ = new AccountServicePJ();
-
     public void printAccountStatement(Customer customer){
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
@@ -53,11 +50,7 @@ public class PrinterDTO<T extends Account, U extends Customer> {
     public String checkFormattedBalanceInLocalCurrency(T account, U customer){
         String bdValanceValue = null;
         NumberFormat nf = NumberFormat.getCurrencyInstance();
-        if (customer instanceof CustomerPF) {
-            bdValanceValue = nf.format(Objects.requireNonNullElseGet(accountService.checkBalance(account), () -> new BigDecimal(0.00)));
-        }else if (customer instanceof CustomerPJ){
-            bdValanceValue = nf.format(Objects.requireNonNullElseGet(accountServicePJ.checkBalance(account), () -> new BigDecimal(0.00)));
-        }
+        bdValanceValue = nf.format(Objects.requireNonNullElseGet(account.getAccountBalance(), () -> new BigDecimal(0.00)));
 
         return bdValanceValue;
     }

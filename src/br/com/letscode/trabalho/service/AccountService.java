@@ -5,11 +5,12 @@ import br.com.letscode.trabalho.enums.AccountType;
 import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.AccountException;
 import br.com.letscode.trabalho.exception.CustomerException;
-import br.com.letscode.trabalho.service.validation.AccountValidation;
+import br.com.letscode.trabalho.service.validation.AccountValidations;
 import br.com.letscode.trabalho.utils.ConstantUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
 
 public class AccountService <T extends Account, U extends CustomerPF>{
 
@@ -17,7 +18,14 @@ public class AccountService <T extends Account, U extends CustomerPF>{
     AccountCycle<CheckingAccount, CustomerPF> accountCycleCheckingAccount = new CheckingAccountService();
     AccountCycle<SavingsAccount, CustomerPF> accountCycleSavingsAccount = new SavingsAccountService();
     AccountCycle<InvestmentAccount, CustomerPF> accountCycleInvestmentAccount = new InvestmentAccountService();
-    AccountValidation accountValidation = new AccountValidation();
+
+    HashMap<String, AccountValidations> validationList;
+
+    public AccountService(HashMap<String, AccountValidations> hmValidationList){
+        this.validationList = hmValidationList;
+    }
+
+
     public U openAccount(String customerName, String customerDocument, DocumentType documentType) throws AccountException, CustomerException{
         if (!isCustomerPF(documentType)){
             throw new CustomerException("It's not a good class to work... try AccountServicePJ");
@@ -78,8 +86,7 @@ public class AccountService <T extends Account, U extends CustomerPF>{
     }
 
     public void withdraw(Account account, BigDecimal withdrawValue) throws AccountException{
-
-        validateBalance(account, withdrawValue);
+        validateBalance(account, withdrawValue, "withdraw");
 
         if (account instanceof CheckingAccount){
             accountCycleCheckingAccount.withdraw((CheckingAccount) account, withdrawValue);
@@ -93,8 +100,7 @@ public class AccountService <T extends Account, U extends CustomerPF>{
     }
 
     public void transfer(Account account, BigDecimal transferValue) throws AccountException{
-
-        validateBalance(account, transferValue);
+        validateBalance(account, transferValue, "transfer");
 
         if (account instanceof CheckingAccount){
             accountCycleCheckingAccount.transfer((CheckingAccount) account, transferValue);
@@ -119,28 +125,18 @@ public class AccountService <T extends Account, U extends CustomerPF>{
     }
 
     private boolean isCustomerPF(DocumentType documentType){
-        if (documentType.equals(DocumentType.CPF)) {
-            return true;
-        }
-        else {
-            return false;
+        return documentType.equals(DocumentType.CPF);
+    }
+
+    public void validateBalance(Account account, BigDecimal value, String keyTransaction) throws AccountException{
+        int i = 0;
+        for (String key : this.validationList.keySet()  ) {
+            if (key.equalsIgnoreCase(keyTransaction + i)){
+                AccountValidations accountValidations = this.validationList.get(key);
+                accountValidations.validate(account, value);
+            }
+            i++;
         }
     }
 
-    private void validateBalance(Account account, BigDecimal value) throws AccountException{
-        if (!accountValidation.isBalancePositive(account)){
-            throw new AccountException("Sorry, Your balance is negative and this transaction cannot be executed in your account "
-                    + account.getAccountLabel()
-                    + " : "
-                    + account.getId()
-                    + ".");
-        }
-        if (!accountValidation.hasAvailableBalance(account, value)){
-            throw new AccountException("Sorry, there is no available balance in your account "
-                    + account.getAccountLabel()
-                    + " : "
-                    + account.getId()
-                    + " for this transaction.");
-        }
-    }
 }
