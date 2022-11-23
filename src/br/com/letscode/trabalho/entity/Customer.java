@@ -1,6 +1,5 @@
 package br.com.letscode.trabalho.entity;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
@@ -40,8 +39,7 @@ public abstract class Customer {
     }
 
     public Account getAccount(Integer accountId){
-        Account account = getAccounts().containsKey(accountId) ? getAccounts().get(accountId) : null;
-        return account;
+        return getAccounts().getOrDefault(accountId, null);
     }
 
     public void addAccount(Account account){
@@ -54,10 +52,10 @@ public abstract class Customer {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Customer{");
-        sb.append("id=").append(id);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", document='").append(document).append('\'');
-        sb.append(", accounts=").append(accounts);
+        sb.append("id=").append(getId());
+        sb.append(", name='").append(getName()).append('\'');
+        sb.append(", document='").append(getDocument()).append('\'');
+        sb.append(", accounts=").append(getAccounts());
         sb.append('}');
         return sb.toString();
     }

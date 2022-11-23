@@ -1,58 +1,67 @@
 package br.com.letscode.trabalho.service;
 
-import br.com.letscode.trabalho.entity.CheckingAccount;
 import br.com.letscode.trabalho.entity.Customer;
-import br.com.letscode.trabalho.entity.InvestimentAccount;
+import br.com.letscode.trabalho.entity.CustomerPF;
+import br.com.letscode.trabalho.entity.InvestmentAccount;
 import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.AccountException;
 import br.com.letscode.trabalho.exception.CustomerException;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
-class InvestmentAccountService implements AccountCycle<InvestimentAccount, Customer>{
+class InvestmentAccountService implements AccountCycle<InvestmentAccount, CustomerPF>{
 
-    InvestimentAccount investimentAccount;
+    InvestmentAccount investmentAccount;
 
     @Override
-    public InvestimentAccount openAccount(String customerDocument, DocumentType documentType) throws AccountException, CustomerException {
+    public InvestmentAccount openAccount() throws AccountException, CustomerException {
         Integer accountID = generateAccountId();
 
-        investimentAccount = new InvestimentAccount();
-        investimentAccount.setId(accountID);
-        updateBalance(investimentAccount, new BigDecimal(0.00));
+        investmentAccount = new InvestmentAccount();
+        investmentAccount.setId(accountID);
+        updateBalance(investmentAccount, new BigDecimal(0.00));
 
-        return investimentAccount;
+        return investmentAccount;
     }
 
     @Override
-    public InvestimentAccount openAccount(Customer customer, BigDecimal balanceValue) throws AccountException, CustomerException {
+    public InvestmentAccount openAccount(CustomerPF customer, BigDecimal balanceValue) throws AccountException, CustomerException {
         Integer accountID = generateAccountId();
 
-        investimentAccount = new InvestimentAccount();
-        investimentAccount.setId(accountID);
-        updateBalance(investimentAccount, balanceValue);
+        investmentAccount = new InvestmentAccount();
+        investmentAccount.setId(accountID);
+        updateBalance(investmentAccount, balanceValue);
 
-        return investimentAccount;
+        return investmentAccount;
     }
 
     @Override
-    public void deposit(Customer customer, BigDecimal depositValue) throws AccountException {
-
+    public void deposit(InvestmentAccount investmentAccount, BigDecimal depositValue) throws AccountException {
+        applyIncome(investmentAccount, depositValue);
     }
 
     @Override
-    public void invest(Customer customer, BigDecimal investmentValue) throws AccountException {
-
+    public void invest(InvestmentAccount investmentAccount, BigDecimal investmentValue) throws AccountException {
+        deposit(investmentAccount, investmentValue);
     }
 
     @Override
-    public void withdraw(Customer customer, BigDecimal investmentValue) throws AccountException {
-
+    public void withdraw(InvestmentAccount investmentAccount, BigDecimal withdrawValue) throws AccountException {
+        BigDecimal newBalanceValue = investmentAccount.getAccountBalance().subtract(withdrawValue);
+        investmentAccount.setAccountBalance(newBalanceValue);
     }
 
     @Override
-    public void transfer(Customer customer, BigDecimal investmentValue) throws AccountException {
-
+    public void transfer(InvestmentAccount investmentAccount, BigDecimal transferValue) throws AccountException {
+        BigDecimal newBalanceValue = investmentAccount.getAccountBalance().subtract(transferValue);
+        investmentAccount.setAccountBalance(newBalanceValue);
     }
 
+    public void applyIncome(InvestmentAccount account, BigDecimal depositValue) throws AccountException {
+        BigDecimal fee = new BigDecimal(0.015);
+        BigDecimal newValue = depositValue.multiply(fee);
+        BigDecimal newBalanceValue = account.getAccountBalance().add(depositValue).add(newValue);
+        account.setAccountBalance(newBalanceValue.setScale(2, RoundingMode.UP));
+    }
 }
