@@ -8,6 +8,7 @@ import br.com.letscode.trabalho.exception.CustomerException;
 import br.com.letscode.trabalho.service.validation.CustomerPFValidation;
 import br.com.letscode.trabalho.service.validation.CustomerPJValidation;
 import br.com.letscode.trabalho.service.validation.CustomerValidation;
+import br.com.letscode.trabalho.utils.ConstantUtils;
 
 import java.util.Random;
 
@@ -41,6 +42,6 @@ public class CustomerService {
 
     public Integer generateCustomerId(){
         Random random = new Random();
-        return random.nextInt(Customer.TOTAL_AVAIABLE_IDS);
+        return random.nextInt(ConstantUtils.CUSTOMER_TOTAL_AVAIABLE_IDS);
     }
 }

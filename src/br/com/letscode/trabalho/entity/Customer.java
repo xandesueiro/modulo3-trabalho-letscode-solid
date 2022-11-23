@@ -10,9 +10,6 @@ public abstract class Customer {
     private String document;
 
     private LinkedHashMap<Integer, Account> accounts;
-
-    public static final int TOTAL_AVAIABLE_IDS = 100;
-
     public Customer(String strName, String strDocument){
         this.name = strName;
         this.document = strDocument;

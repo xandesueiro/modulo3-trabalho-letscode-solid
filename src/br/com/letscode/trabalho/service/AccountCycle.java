@@ -6,6 +6,7 @@ import br.com.letscode.trabalho.entity.CustomerPF;
 import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.AccountException;
 import br.com.letscode.trabalho.exception.CustomerException;
+import br.com.letscode.trabalho.utils.ConstantUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -23,12 +24,12 @@ public interface AccountCycle<T extends Account, U extends CustomerPF>{
 
     default Integer generateAccountId(){
         Random random = new Random();
-        return random.nextInt(Account.RANGE_START, Account.RANGE_END);
+        return random.nextInt(ConstantUtils.ACCOUNT_RANGE_START, ConstantUtils.ACCOUNT_RANGE_END);
     }
 
     default void updateBalance(T account, BigDecimal newValue){
         if (newValue != null)
-            account.setAccountBalance(newValue.setScale(Account.SCALE_BALANCE, RoundingMode.UP));
+            account.setAccountBalance(newValue.setScale(ConstantUtils.ACCOUNT_SCALE_BALANCE, RoundingMode.UP));
         else
             account.setAccountBalance(new BigDecimal(0.00));
     }

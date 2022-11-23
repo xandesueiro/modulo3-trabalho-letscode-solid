@@ -9,10 +9,6 @@ public abstract class Account {
     protected BigDecimal accountBalance;
     protected String accountLabel;
 
-    public static final int RANGE_START = 500;
-    public static final int RANGE_END = 800;
-    public static final int SCALE_BALANCE = 2;
-
     public Integer getId() {
         return id;
     }

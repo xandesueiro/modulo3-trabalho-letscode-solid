@@ -6,6 +6,7 @@ import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.AccountException;
 import br.com.letscode.trabalho.exception.CustomerException;
 import br.com.letscode.trabalho.service.validation.AccountValidation;
+import br.com.letscode.trabalho.utils.ConstantUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -109,7 +110,7 @@ public class AccountService <T extends Account, U extends CustomerPF>{
     public BigDecimal checkBalance(T account){
         BigDecimal bdValanceValue;
         if (account.getAccountBalance() != null) {
-            bdValanceValue = account.getAccountBalance().setScale(Account.SCALE_BALANCE, RoundingMode.UP);
+            bdValanceValue = account.getAccountBalance().setScale(ConstantUtils.ACCOUNT_SCALE_BALANCE, RoundingMode.UP);
         }else{
             bdValanceValue = new BigDecimal(0.00);
         }
