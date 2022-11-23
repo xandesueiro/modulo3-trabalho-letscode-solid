@@ -62,7 +62,7 @@ class InvestmentAccountServicePJ implements FullAccountCycle<InvestmentAccount, 
     @Override
     public BigDecimal applyFee(InvestmentAccount account, BigDecimal depositValue) throws AccountException {
         BigDecimal fee = new BigDecimal(0.005);
-        BigDecimal newValue = account.getAccountBalance().multiply(fee);
+        BigDecimal newValue = depositValue.multiply(fee);
         return newValue;
     }
 
