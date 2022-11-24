@@ -8,23 +8,24 @@ import br.com.letscode.trabalho.enums.AccountType;
 import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.AccountException;
 import br.com.letscode.trabalho.exception.CustomerException;
-import br.com.letscode.trabalho.service.AccountService;
-import br.com.letscode.trabalho.service.AccountServicePJ;
-import br.com.letscode.trabalho.service.validation.AccountAvailableBalanceValidation;
-import br.com.letscode.trabalho.service.validation.AccountPositiveBalanceValidation;
-import br.com.letscode.trabalho.service.validation.AccountValidations;
+import br.com.letscode.trabalho.service.account.AccountServicePF;
+import br.com.letscode.trabalho.service.account.AccountServicePJ;
+import br.com.letscode.trabalho.validation.account.AccountAvailableBalanceValidation;
+import br.com.letscode.trabalho.validation.account.AccountPositiveBalanceValidation;
+import br.com.letscode.trabalho.validation.account.AccountValidations;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class MainTests {
 
     private static HashMap<String, AccountValidations> validationsList;
 
     public static void main(String[] args) {
-        validationsList = new HashMap<>();
-        validationsList.put("withdraw0", new AccountPositiveBalanceValidation());
-        validationsList.put("withdraw1", new AccountAvailableBalanceValidation());
+        validationsList = new LinkedHashMap<>();
+        validationsList.put("withdrawal0", new AccountPositiveBalanceValidation());
+        validationsList.put("withdrawal1", new AccountAvailableBalanceValidation());
         validationsList.put("transfer0", new AccountPositiveBalanceValidation());
         validationsList.put("transfer1", new AccountAvailableBalanceValidation());
 
@@ -33,30 +34,31 @@ public class MainTests {
     }
 
     private static void workCustomerPF(){
-        AccountService accountService = new AccountService(validationsList);
+        AccountServicePF accountServicePF = new AccountServicePF(validationsList);
         PrinterDTO printerDTO = new PrinterDTO();
         CustomerPF customer;
 
         try {
-            System.out.println("==============CUSTOMER PF==================\n");
+            System.out.println("\n");
+            System.out.println("============================== CUSTOMER PF ==============================\n");
 
             String strName = "alexandre sueiro";
             String strDocumento = "45269380765"; //example valid cpf
 
-            customer = accountService.openAccount(strName, strDocumento, DocumentType.CPF);
-            System.out.println(customer + "\n");
+            customer = accountServicePF.openAccount(strName, strDocumento, DocumentType.CPF);
+            System.out.println(customer);
 
             BigDecimal strCash = new BigDecimal(100.00);
-            customer = accountService.openAccount(customer, AccountType.CHECKING_ACCOUNT, strCash);
-            System.out.println(customer + "\n");
+            customer = accountServicePF.openAccount(customer, AccountType.CHECKING_ACCOUNT, strCash);
+            System.out.println(customer);
 
             strCash = new BigDecimal(100.00);
-            customer = accountService.openAccount(customer, AccountType.SAVINGS_ACCOUNT, strCash);
-            System.out.println(customer + "\n");
+            customer = accountServicePF.openAccount(customer, AccountType.SAVINGS_ACCOUNT, strCash);
+            System.out.println(customer);
 
             strCash = new BigDecimal(100.00);
-            customer = accountService.openAccount(customer, AccountType.INVESTMENT_ACCOUNT, strCash);
-            System.out.println(customer + "\n");
+            customer = accountServicePF.openAccount(customer, AccountType.INVESTMENT_ACCOUNT, strCash);
+            System.out.println(customer);
 
             printerDTO.printAccountStatement(customer);
 
@@ -66,19 +68,26 @@ public class MainTests {
             System.out.println("\n--> INVEST: \n");
             investTestsAllAccounts(customer, new BigDecimal(500.00));
 
-            System.out.println("\n--> WITHDRAW: \n");
-            widhdrawTestsAllAccounts(customer, new BigDecimal(100.00));
+            System.out.println("\n--> WITHDRAWAL: \n");
+            withdrawalTestsAllAccounts(customer, new BigDecimal(100.00));
 
             System.out.println("\n--> TRANSFER: \n");
             transferTestsAllAccounts(customer, new BigDecimal(100.00));
 
-            System.out.println("\n");
             printerDTO.printAccountStatement(customer);
 
+            System.out.println("============ VALIDACAO DE ERROS PF");
+            System.out.println("\n--> WITHDRAWAL: \n");
+            withdrawalTestsAllAccounts(customer, new BigDecimal(100000000000.00));
+
+            System.out.println("\n--> TRANSFER: \n");
+            transferTestsAllAccounts(customer, new BigDecimal(100000000000.00));
+
+
         } catch (AccountException e) {
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage());
         } catch (CustomerException e) {
-            System.err.println(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -88,24 +97,25 @@ public class MainTests {
         CustomerPJ customerPJ;
 
         try {
-            System.out.println("==============CUSTOMER PJ==================\n");
+            System.out.println("\n");
+            System.out.println("============================== CUSTOMER PJ ==============================\n");
 
             String strNamePJ = "code & cia";
             String strDocumentoPJ = "33760346000147"; //example valid cnpj
 
             customerPJ = accountServicePJ.openAccount(strNamePJ, strDocumentoPJ, DocumentType.CNPJ);
-            System.out.println(customerPJ + "\n");
+            System.out.println(customerPJ);
 
             BigDecimal strCashPJ = new BigDecimal(1000.00);
             customerPJ = accountServicePJ.openAccount(customerPJ, AccountType.CHECKING_ACCOUNT, strCashPJ);
-            System.out.println(customerPJ + "\n");
+            System.out.println(customerPJ);
 
             try {
                 strCashPJ = new BigDecimal(1000.00);
                 customerPJ = accountServicePJ.openAccount(customerPJ, AccountType.SAVINGS_ACCOUNT, strCashPJ);
-                System.out.println(customerPJ + "\n");
+                System.out.println(customerPJ);
             }catch (CustomerException customerException){
-                System.err.println(customerException.getMessage()+"\n");
+                System.out.println(customerException.getMessage());
             }
 
             strCashPJ = new BigDecimal(1000.00);
@@ -120,8 +130,8 @@ public class MainTests {
             System.out.println("\n--> INVEST: \n");
             investTestsAllAccounts(customerPJ, new BigDecimal(1000.00));
 
-            System.out.println("\n--> WITHDRAW: \n");
-            widhdrawTestsAllAccounts(customerPJ, new BigDecimal(500.00));
+            System.out.println("\n--> WITHDRAWAL: \n");
+            withdrawalTestsAllAccounts(customerPJ, new BigDecimal(500.00));
 
             System.out.println("\n--> TRANSFER: \n");
             transferTestsAllAccounts(customerPJ, new BigDecimal(100.00));
@@ -129,6 +139,12 @@ public class MainTests {
             System.out.println("\n");
             printerDTO.printAccountStatement(customerPJ);
 
+            System.out.println("============ VALIDACAO DE ERROS PJ");
+            System.out.println("\n--> WITHDRAWAL: \n");
+            withdrawalTestsAllAccounts(customerPJ, new BigDecimal(100000000000.00));
+
+            System.out.println("\n--> TRANSFER: \n");
+            transferTestsAllAccounts(customerPJ, new BigDecimal(100000000000.00));
 
         } catch (AccountException e) {
             System.out.println(e.getMessage());
@@ -147,8 +163,8 @@ public class MainTests {
                 BigDecimal beforeDeposit = account.getAccountBalance();
 
                 if (customer instanceof CustomerPF) {
-                    AccountService accountService = new AccountService(validationsList);
-                    accountService.deposit(account, value);
+                    AccountServicePF accountServicePF = new AccountServicePF(validationsList);
+                    accountServicePF.deposit(account, value);
                 }else{
                     AccountServicePJ accountService = new AccountServicePJ(validationsList);
                     accountService.deposit(account, value);
@@ -161,7 +177,7 @@ public class MainTests {
                         + " After Deposit: " + printerDTO.getFormattedBalanceInLocalCurrency(afterDeposit)
                 );
             }catch (AccountException accountException){
-                System.err.println(accountException.getMessage());
+                System.out.println(accountException.getMessage());
             }
         }
 
@@ -175,51 +191,51 @@ public class MainTests {
                 BigDecimal beforeInvest = account.getAccountBalance();
 
                 if (customer instanceof CustomerPF) {
-                    AccountService accountService = new AccountService(validationsList);
-                    accountService.invest(account, value);
+                    AccountServicePF accountServicePF = new AccountServicePF(validationsList);
+                    accountServicePF.invest(account, value);
                 }else{
                     AccountServicePJ accountService = new AccountServicePJ(validationsList);
                     accountService.invest(account, value);
                 }
 
                 BigDecimal afterInvest = account.getAccountBalance();
-                System.err.println(account.getAccountLabel()
+                System.out.println(account.getAccountLabel()
                         + " - id: " + account.getId()
                         + " Before Balance: " + printerDTO.getFormattedBalanceInLocalCurrency(beforeInvest)
                         + " /"
                         + " After Invest: " + printerDTO.getFormattedBalanceInLocalCurrency(afterInvest)
                 );
             }catch (AccountException accountException){
-                System.err.println(accountException.getMessage());
+                System.out.println(accountException.getMessage());
             }
         }
     }
 
-    private static void widhdrawTestsAllAccounts(Customer customer, BigDecimal value){
+    private static void withdrawalTestsAllAccounts(Customer customer, BigDecimal value){
         PrinterDTO printerDTO = new PrinterDTO();
 
         System.out.println(customer);
         for (Account account: customer.getAccounts().values()) {
             try{
-                BigDecimal beforeWithdraw = account.getAccountBalance();
+                BigDecimal beforeWithdrawal = account.getAccountBalance();
 
                 if (customer instanceof CustomerPF) {
-                    AccountService accountService = new AccountService(validationsList);
-                    accountService.withdraw(account, value);
+                    AccountServicePF accountServicePF = new AccountServicePF(validationsList);
+                    accountServicePF.withdrawal(account, value);
                 }else{
                     AccountServicePJ accountService = new AccountServicePJ(validationsList);
-                    accountService.withdraw(account, value);
+                    accountService.withdrawal(account, value);
                 }
 
-                BigDecimal afterWithdraw = account.getAccountBalance();
+                BigDecimal afterWithdrawal = account.getAccountBalance();
                 System.out.println(account.getAccountLabel()
                         + " - id: " + account.getId()
-                        + " Before Balance: " + printerDTO.getFormattedBalanceInLocalCurrency(beforeWithdraw)
+                        + " Before Balance: " + printerDTO.getFormattedBalanceInLocalCurrency(beforeWithdrawal)
                         + " /"
-                        + " After Withdraw: " + printerDTO.getFormattedBalanceInLocalCurrency(afterWithdraw)
+                        + " After Withdrawal: " + printerDTO.getFormattedBalanceInLocalCurrency(afterWithdrawal)
                 );
             }catch (AccountException accountException){
-                System.err.println(accountException.getMessage());
+                System.out.println(accountException.getMessage());
             }
         }
     }
@@ -233,8 +249,8 @@ public class MainTests {
                 BigDecimal beforeTransfer = account.getAccountBalance();
 
                 if (customer instanceof CustomerPF) {
-                    AccountService accountService = new AccountService(validationsList);
-                    accountService.transfer(account, value);
+                    AccountServicePF accountServicePF = new AccountServicePF(validationsList);
+                    accountServicePF.transfer(account, value);
                 }else{
                     AccountServicePJ accountService = new AccountServicePJ(validationsList);
                     accountService.transfer(account, value);
@@ -248,7 +264,7 @@ public class MainTests {
                         + " After Transfer: " + printerDTO.getFormattedBalanceInLocalCurrency(afterTransfer)
                 );
             }catch (AccountException accountException){
-                System.err.println(accountException.getMessage());
+                System.out.println(accountException.getMessage());
             }
         }
     }

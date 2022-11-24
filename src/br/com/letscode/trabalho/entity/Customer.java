@@ -69,4 +69,7 @@ public abstract class Customer {
     public int hashCode() {
         return Objects.hash(name, document);
     }
+
+    public void setCpfFormatted(String toString) {
+    }
 }

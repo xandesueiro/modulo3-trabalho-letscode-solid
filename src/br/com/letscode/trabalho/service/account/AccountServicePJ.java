@@ -1,22 +1,26 @@
-package br.com.letscode.trabalho.service;
+package br.com.letscode.trabalho.service.account;
 
+import br.com.letscode.trabalho.dto.FormatterDocumentDTO;
 import br.com.letscode.trabalho.entity.*;
 import br.com.letscode.trabalho.enums.AccountType;
 import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.AccountException;
 import br.com.letscode.trabalho.exception.CustomerException;
-import br.com.letscode.trabalho.service.validation.AccountValidations;
-import br.com.letscode.trabalho.utils.ConstantUtils;
+import br.com.letscode.trabalho.service.customer.CustomerService;
+import br.com.letscode.trabalho.validation.account.AccountValidations;
+import br.com.letscode.trabalho.validation.customer.CustomerLengthCNPJValidation;
+import br.com.letscode.trabalho.validation.customer.CustomerValidCNPJValidation;
+import br.com.letscode.trabalho.validation.customer.CustomerValidations;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
-    CustomerService customerService = new CustomerService();
-    FullAccountCycle<CheckingAccount, CustomerPJ> fullAccountCycleCheckingAccount = new CheckingAccountServicePJ();
-    FullAccountCycle<SavingsAccount, CustomerPJ> fullAccountCycleSavingsAccount = new SavingsAccountServicePJ();
-    FullAccountCycle<InvestmentAccount, CustomerPJ> fullAccountCycleInvestmentAccount = new InvestmentAccountServicePJ();
+    AccountCyclePJ<CheckingAccount, CustomerPJ> accountCycleCheckingAccountPJ = new CheckingAccountServicePJ();
+    AccountCyclePJ<SavingsAccount, CustomerPJ> accountCycleSavingsAccountPJ = new SavingsAccountServicePJ();
+    AccountCyclePJ<InvestmentAccount, CustomerPJ> accountCycleInvestmentAccountPJ = new InvestmentAccountServicePJ();
 
     HashMap<String, AccountValidations> validationList;
 
@@ -31,7 +35,13 @@ public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
         CheckingAccount checkingAccount;
         Customer customer;
 
-        checkingAccount =  fullAccountCycleCheckingAccount.openAccount(customerDocument, documentType);
+        checkingAccount =  accountCycleCheckingAccountPJ.openAccount(customerDocument, documentType);
+
+        List<CustomerValidations> customerValidationList = new ArrayList<>();
+        customerValidationList.add(new CustomerLengthCNPJValidation());
+        customerValidationList.add(new CustomerValidCNPJValidation());
+        CustomerService customerService = new CustomerService(new FormatterDocumentDTO(), customerValidationList);
+
         customer = customerService.saveCustomer(customerName, customerDocument, documentType);
         customer.addAccount(checkingAccount);
 
@@ -42,14 +52,14 @@ public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
         Account account;
         switch (accountType){
             case CHECKING_ACCOUNT -> {
-                account = fullAccountCycleCheckingAccount.openAccount(customer, balanceValue);
+                account = accountCycleCheckingAccountPJ.openAccount(customer, balanceValue);
                 customer.addAccount(account);
             }
             case SAVINGS_ACCOUNT -> {
                 throw new CustomerException("A Customer PJ can't have a Savings Account");
             }
             case INVESTMENT_ACCOUNT -> {
-                account = fullAccountCycleInvestmentAccount.openAccount(customer, balanceValue);
+                account = accountCycleInvestmentAccountPJ.openAccount(customer, balanceValue);
                 customer.addAccount(account);
             }
             default -> throw new AccountException("Error: account type not defined");
@@ -59,11 +69,11 @@ public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
 
     public void deposit(T account, BigDecimal depositValue) throws AccountException{
         if (account instanceof CheckingAccount){
-            fullAccountCycleCheckingAccount.deposit((CheckingAccount) account, depositValue);
+            accountCycleCheckingAccountPJ.deposit((CheckingAccount) account, depositValue);
         }else if (account instanceof SavingsAccount){
-            fullAccountCycleSavingsAccount.deposit((SavingsAccount) account, depositValue);
+            accountCycleSavingsAccountPJ.deposit((SavingsAccount) account, depositValue);
         }else if (account instanceof InvestmentAccount) {
-            fullAccountCycleInvestmentAccount.deposit((InvestmentAccount) account, depositValue);
+            accountCycleInvestmentAccountPJ.deposit((InvestmentAccount) account, depositValue);
         }else{
             throw new AccountException("Error: account type not defined");
         }
@@ -71,25 +81,25 @@ public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
 
     public void invest(T account, BigDecimal investmentValue) throws AccountException{
         if (account instanceof CheckingAccount){
-            fullAccountCycleCheckingAccount.invest((CheckingAccount) account, investmentValue);
+            accountCycleCheckingAccountPJ.invest((CheckingAccount) account, investmentValue);
         }else if (account instanceof SavingsAccount){
-            fullAccountCycleSavingsAccount.invest((SavingsAccount) account, investmentValue);
+            accountCycleSavingsAccountPJ.invest((SavingsAccount) account, investmentValue);
         }else if (account instanceof InvestmentAccount) {
-            fullAccountCycleInvestmentAccount.invest((InvestmentAccount) account, investmentValue);
+            accountCycleInvestmentAccountPJ.invest((InvestmentAccount) account, investmentValue);
         }else{
             throw new AccountException("Error: account type not defined");
         }
     }
 
-    public void withdraw(T account, BigDecimal withdrawValue) throws AccountException{
-        validateBalance(account, withdrawValue, "withdraw");
+    public void withdrawal(T account, BigDecimal withdrawValue) throws AccountException{
+        validateBalance(account, withdrawValue, "withdrawal");
 
         if (account instanceof CheckingAccount){
-            fullAccountCycleCheckingAccount.withdraw((CheckingAccount) account, withdrawValue);
+            accountCycleCheckingAccountPJ.withdrawal((CheckingAccount) account, withdrawValue);
         }else if (account instanceof SavingsAccount){
-            fullAccountCycleSavingsAccount.withdraw((SavingsAccount) account, withdrawValue);
+            accountCycleSavingsAccountPJ.withdrawal((SavingsAccount) account, withdrawValue);
         }else if (account instanceof InvestmentAccount) {
-            fullAccountCycleInvestmentAccount.withdraw((InvestmentAccount) account, withdrawValue);
+            accountCycleInvestmentAccountPJ.withdrawal((InvestmentAccount) account, withdrawValue);
         }else{
             throw new AccountException("Error: account type not defined");
         }
@@ -99,25 +109,14 @@ public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
         validateBalance(account, transferValue, "transfer");
 
         if (account instanceof CheckingAccount){
-            fullAccountCycleCheckingAccount.transfer((CheckingAccount) account, transferValue);
+            accountCycleCheckingAccountPJ.transfer((CheckingAccount) account, transferValue);
         }else if (account instanceof SavingsAccount){
-            fullAccountCycleSavingsAccount.transfer((SavingsAccount) account, transferValue);
+            accountCycleSavingsAccountPJ.transfer((SavingsAccount) account, transferValue);
         }else if (account instanceof InvestmentAccount) {
-            fullAccountCycleInvestmentAccount.transfer((InvestmentAccount) account, transferValue);
+            accountCycleInvestmentAccountPJ.transfer((InvestmentAccount) account, transferValue);
         }else{
             throw new AccountException("Error: account type not defined");
         }
-    }
-
-    public BigDecimal checkBalance(T account){
-        BigDecimal bdValanceValue;
-        if (account.getAccountBalance() != null) {
-            bdValanceValue = account.getAccountBalance().setScale(ConstantUtils.ACCOUNT_SCALE_BALANCE, RoundingMode.UP);
-        }else{
-            bdValanceValue = new BigDecimal(0.00);
-        }
-
-        return bdValanceValue;
     }
 
     private boolean isCustomerPJ(DocumentType documentType){
@@ -127,11 +126,11 @@ public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
     public void validateBalance(Account account, BigDecimal value, String keyTransaction) throws AccountException{
         int i = 0;
         for (String key : this.validationList.keySet()  ) {
-            if (key.equalsIgnoreCase(keyTransaction + i)){
+            if (key.equalsIgnoreCase(keyTransaction.concat( Integer.toString(i) ))){
                 AccountValidations accountValidations = this.validationList.get(key);
                 accountValidations.validate(account, value);
+                i++;
             }
-            i++;
         }
     }
 }

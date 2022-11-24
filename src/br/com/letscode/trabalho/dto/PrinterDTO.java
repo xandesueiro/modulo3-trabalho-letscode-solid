@@ -4,8 +4,6 @@ import br.com.letscode.trabalho.entity.Account;
 import br.com.letscode.trabalho.entity.Customer;
 import br.com.letscode.trabalho.entity.CustomerPF;
 import br.com.letscode.trabalho.entity.CustomerPJ;
-import br.com.letscode.trabalho.service.AccountService;
-import br.com.letscode.trabalho.service.AccountServicePJ;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -22,9 +20,9 @@ public class PrinterDTO<T extends Account, U extends Customer> {
         sb.append("Customer name         : ").append(customer.getName()).append("\n");
 
         if (customer instanceof CustomerPF) {
-            sb.append("Document              : ").append(getCustomerPFDocument((CustomerPF) customer)).append("\n");
+            sb.append("Document              : ").append(((CustomerPF) customer).getCpfFormatted()).append("\n");
         }else{
-            sb.append("Document              : ").append(getCustomerPJDocument((CustomerPJ) customer)).append("\n");
+            sb.append("Document              : ").append(((CustomerPJ) customer).getCnpjFormatted()).append("\n");
         }
 
         for (Map.Entry<Integer, Account> accounts : customer.getAccounts().entrySet()) {
@@ -37,14 +35,6 @@ public class PrinterDTO<T extends Account, U extends Customer> {
         sb.append("\n");
 
         System.out.println(sb);
-    }
-
-    private String getCustomerPFDocument(CustomerPF customerPF){
-        return customerPF.getCpfFormatted();
-    }
-
-    private String getCustomerPJDocument(CustomerPJ customerPJ){
-        return customerPJ.getCnpjFormatted();
     }
 
     public String checkFormattedBalanceInLocalCurrency(T account, U customer){

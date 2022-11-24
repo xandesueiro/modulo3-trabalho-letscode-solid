@@ -1,4 +1,4 @@
-package br.com.letscode.trabalho.service;
+package br.com.letscode.trabalho.service.account;
 
 import br.com.letscode.trabalho.entity.CheckingAccount;
 import br.com.letscode.trabalho.entity.CustomerPJ;
@@ -8,7 +8,7 @@ import br.com.letscode.trabalho.exception.CustomerException;
 
 import java.math.BigDecimal;
 
-class CheckingAccountServicePJ implements FullAccountCycle<CheckingAccount, CustomerPJ> {
+class CheckingAccountServicePJ implements AccountCyclePJ<CheckingAccount, CustomerPJ> {
 
     CheckingAccount checkingAccount = null;
 
@@ -45,7 +45,7 @@ class CheckingAccountServicePJ implements FullAccountCycle<CheckingAccount, Cust
     }
 
     @Override
-    public void withdraw(CheckingAccount account, BigDecimal withdrawValue) throws AccountException {
+    public void withdrawal(CheckingAccount account, BigDecimal withdrawValue) throws AccountException {
         BigDecimal newValue = applyFee(account, withdrawValue);
         BigDecimal newBalanceValue = account.getAccountBalance().subtract(withdrawValue).subtract(newValue);
         account.setAccountBalance(newBalanceValue);

@@ -1,16 +1,14 @@
-package br.com.letscode.trabalho.service;
+package br.com.letscode.trabalho.service.account;
 
-import br.com.letscode.trabalho.entity.Customer;
 import br.com.letscode.trabalho.entity.CustomerPF;
 import br.com.letscode.trabalho.entity.InvestmentAccount;
-import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.AccountException;
 import br.com.letscode.trabalho.exception.CustomerException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-class InvestmentAccountService implements AccountCycle<InvestmentAccount, CustomerPF>{
+class InvestmentAccountServicePF implements AccountCyclePF<InvestmentAccount, CustomerPF> {
 
     InvestmentAccount investmentAccount;
 
@@ -47,7 +45,7 @@ class InvestmentAccountService implements AccountCycle<InvestmentAccount, Custom
     }
 
     @Override
-    public void withdraw(InvestmentAccount investmentAccount, BigDecimal withdrawValue) throws AccountException {
+    public void withdrawal(InvestmentAccount investmentAccount, BigDecimal withdrawValue) throws AccountException {
         BigDecimal newBalanceValue = investmentAccount.getAccountBalance().subtract(withdrawValue);
         investmentAccount.setAccountBalance(newBalanceValue);
     }
