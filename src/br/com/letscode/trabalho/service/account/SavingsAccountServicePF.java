@@ -2,17 +2,32 @@ package br.com.letscode.trabalho.service.account;
 
 import br.com.letscode.trabalho.entity.CustomerPF;
 import br.com.letscode.trabalho.entity.SavingsAccount;
+import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.AccountException;
 import br.com.letscode.trabalho.exception.CustomerException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-class SavingsAccountServicePF implements AccountCyclePF<SavingsAccount, CustomerPF> {
+class SavingsAccountServicePF
+        implements AccountCycleOpen<SavingsAccount, CustomerPF>,
+        AccountCyclePF<SavingsAccount, CustomerPF>,
+        AccountCycleIncome<SavingsAccount>
+{
 
-    SavingsAccount savingsAccount;
+    public SavingsAccount openAccount(String customerDocument, DocumentType documentType) throws AccountException, CustomerException {
+        Integer accountID = generateAccountId();
+
+        SavingsAccount savingsAccount = new SavingsAccount();
+        savingsAccount.setId(accountID);
+        updateBalance(savingsAccount, new BigDecimal(0.00));
+
+        return savingsAccount;
+    }
+
     @Override
     public SavingsAccount openAccount() throws AccountException, CustomerException {
+        SavingsAccount savingsAccount;
         Integer accountID = generateAccountId();
 
         savingsAccount = new SavingsAccount();
@@ -21,13 +36,11 @@ class SavingsAccountServicePF implements AccountCyclePF<SavingsAccount, Customer
 
         return savingsAccount;
     }
-
     @Override
     public SavingsAccount openAccount(CustomerPF customer, BigDecimal balanceValue) throws CustomerException {
-
         Integer accountID = generateAccountId();
 
-        savingsAccount = new SavingsAccount();
+        SavingsAccount savingsAccount = new SavingsAccount();
         savingsAccount.setId(accountID);
         updateBalance(savingsAccount, balanceValue);
 
@@ -37,11 +50,6 @@ class SavingsAccountServicePF implements AccountCyclePF<SavingsAccount, Customer
     @Override
     public void deposit(SavingsAccount savingsAccount, BigDecimal depositValue) throws AccountException {
         applyIncome(savingsAccount, depositValue);
-    }
-
-    @Override
-    public void invest(SavingsAccount savingsAccount, BigDecimal investmentValue) throws AccountException {
-        deposit(savingsAccount, investmentValue);
     }
 
     @Override
@@ -56,6 +64,12 @@ class SavingsAccountServicePF implements AccountCyclePF<SavingsAccount, Customer
         savingsAccount.setAccountBalance(newBalanceValue);
     }
 
+    @Override
+    public void invest(SavingsAccount savingsAccount, BigDecimal investmentValue) throws AccountException {
+        deposit(savingsAccount, investmentValue);
+    }
+
+    @Override
     public void applyIncome(SavingsAccount savingsAccount, BigDecimal depositValue) throws AccountException {
         BigDecimal fee = new BigDecimal(0.01);
         BigDecimal newValue = depositValue.multiply(fee);

@@ -2,21 +2,35 @@ package br.com.letscode.trabalho.service.account;
 
 import br.com.letscode.trabalho.entity.CustomerPF;
 import br.com.letscode.trabalho.entity.InvestmentAccount;
+import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.AccountException;
 import br.com.letscode.trabalho.exception.CustomerException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-class InvestmentAccountServicePF implements AccountCyclePF<InvestmentAccount, CustomerPF> {
+class InvestmentAccountServicePF
+        implements AccountCycleOpen<InvestmentAccount, CustomerPF>,
+        AccountCyclePF<InvestmentAccount, CustomerPF>,
+        AccountCycleIncome<InvestmentAccount>
+{
 
-    InvestmentAccount investmentAccount;
+    @Override
+    public InvestmentAccount openAccount(String customerDocument, DocumentType documentType) throws AccountException, CustomerException {
+        Integer accountID = generateAccountId();
+
+        InvestmentAccount investmentAccount = new InvestmentAccount();
+        investmentAccount.setId(accountID);
+        updateBalance(investmentAccount, new BigDecimal(0.00));
+
+        return investmentAccount;
+    }
 
     @Override
     public InvestmentAccount openAccount() throws AccountException, CustomerException {
         Integer accountID = generateAccountId();
 
-        investmentAccount = new InvestmentAccount();
+        InvestmentAccount investmentAccount = new InvestmentAccount();
         investmentAccount.setId(accountID);
         updateBalance(investmentAccount, new BigDecimal(0.00));
 
@@ -27,7 +41,7 @@ class InvestmentAccountServicePF implements AccountCyclePF<InvestmentAccount, Cu
     public InvestmentAccount openAccount(CustomerPF customer, BigDecimal balanceValue) throws AccountException, CustomerException {
         Integer accountID = generateAccountId();
 
-        investmentAccount = new InvestmentAccount();
+        InvestmentAccount investmentAccount = new InvestmentAccount();
         investmentAccount.setId(accountID);
         updateBalance(investmentAccount, balanceValue);
 
@@ -37,11 +51,6 @@ class InvestmentAccountServicePF implements AccountCyclePF<InvestmentAccount, Cu
     @Override
     public void deposit(InvestmentAccount investmentAccount, BigDecimal depositValue) throws AccountException {
         applyIncome(investmentAccount, depositValue);
-    }
-
-    @Override
-    public void invest(InvestmentAccount investmentAccount, BigDecimal investmentValue) throws AccountException {
-        deposit(investmentAccount, investmentValue);
     }
 
     @Override
@@ -56,6 +65,12 @@ class InvestmentAccountServicePF implements AccountCyclePF<InvestmentAccount, Cu
         investmentAccount.setAccountBalance(newBalanceValue);
     }
 
+    @Override
+    public void invest(InvestmentAccount investmentAccount, BigDecimal investmentValue) throws AccountException {
+        deposit(investmentAccount, investmentValue);
+    }
+
+    @Override
     public void applyIncome(InvestmentAccount account, BigDecimal depositValue) throws AccountException {
         BigDecimal fee = new BigDecimal(0.015);
         BigDecimal newValue = depositValue.multiply(fee);

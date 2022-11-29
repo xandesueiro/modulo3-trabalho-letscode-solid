@@ -2,12 +2,27 @@ package br.com.letscode.trabalho.service.account;
 
 import br.com.letscode.trabalho.entity.CheckingAccount;
 import br.com.letscode.trabalho.entity.CustomerPF;
+import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.AccountException;
 import br.com.letscode.trabalho.exception.CustomerException;
 
 import java.math.BigDecimal;
 
-class CheckingAccountServicePF implements AccountCyclePF<CheckingAccount, CustomerPF> {
+class CheckingAccountServicePF
+        implements AccountCycleOpen<CheckingAccount, CustomerPF>,
+        AccountCyclePF<CheckingAccount, CustomerPF>{
+
+    @Override
+    public CheckingAccount openAccount(String customerDocument, DocumentType documentType) throws AccountException, CustomerException {
+        Integer accountID = generateAccountId();
+
+        CheckingAccount checkingAccount = new CheckingAccount();
+        checkingAccount.setId(accountID);
+        updateBalance(checkingAccount, new BigDecimal(0.00));
+
+        return checkingAccount;
+    }
+
     @Override
     public CheckingAccount openAccount() throws AccountException, CustomerException {
         CheckingAccount checkingAccount;
@@ -33,13 +48,8 @@ class CheckingAccountServicePF implements AccountCyclePF<CheckingAccount, Custom
     }
 
     @Override
-    public void deposit(CheckingAccount checkingAccount, BigDecimal depositValue) throws AccountException {
-        applyIncome(checkingAccount, depositValue);
-    }
-
-    @Override
-    public void invest(CheckingAccount checkingAccount, BigDecimal investmentValue) throws AccountException {
-        deposit(checkingAccount, investmentValue);
+    public void deposit(CheckingAccount account, BigDecimal depositValue) throws AccountException {
+        account.getAccountBalance().add(depositValue);
     }
 
     @Override
@@ -52,10 +62,5 @@ class CheckingAccountServicePF implements AccountCyclePF<CheckingAccount, Custom
     public void transfer(CheckingAccount checkingAccount, BigDecimal transferValue) throws AccountException {
         BigDecimal newBalanceValue = checkingAccount.getAccountBalance().subtract(transferValue);
         checkingAccount.setAccountBalance(newBalanceValue);
-    }
-
-    public void applyIncome(CheckingAccount account, BigDecimal depositValue) throws AccountException {
-        BigDecimal newValue = account.getAccountBalance().add(depositValue);
-        account.setAccountBalance(newValue);
     }
 }

@@ -33,10 +33,11 @@ public class AccountServicePF<T extends Account, U extends CustomerPF>{
         if (!isCustomerPF(documentType)){
             throw new CustomerException("It's not a good class to work... try AccountServicePJ");
         }
+        AccountCycleOpen<CheckingAccount, CustomerPF>  accountCycleOpen = new CheckingAccountServicePF();
         CheckingAccount checkingAccount;
         Customer customer;
 
-        checkingAccount = accountCycleCheckingAccountPF.openAccount();
+        checkingAccount = accountCycleOpen.openAccount();
 
         List<CustomerValidations> customerValidationList = new ArrayList<>();
         customerValidationList.add(new CustomerLengthCPFValidation());
@@ -50,18 +51,21 @@ public class AccountServicePF<T extends Account, U extends CustomerPF>{
     }
 
     public U openAccount(U customer, AccountType accountType, BigDecimal balanceValue) throws AccountException, CustomerException{
-        Account account;
+        Account account = null;
         switch (accountType){
             case CHECKING_ACCOUNT -> {
-                account = accountCycleCheckingAccountPF.openAccount(customer, balanceValue);
+                AccountCycleOpen<CheckingAccount, CustomerPF>  accountCycleOpen = new CheckingAccountServicePF();
+                account = accountCycleOpen.openAccount(customer, balanceValue);
                 customer.addAccount(account);
             }
             case SAVINGS_ACCOUNT -> {
-                account = accountCycleSavingsAccountPF.openAccount(customer, balanceValue);
+                AccountCycleOpen<SavingsAccount, CustomerPF> accountCycleOpen = new SavingsAccountServicePF();
+                account = accountCycleOpen.openAccount(customer, balanceValue);
                 customer.addAccount(account);
             }
             case INVESTMENT_ACCOUNT -> {
-                account = accountCycleInvestmentAccountPF.openAccount(customer, balanceValue);
+                AccountCycleOpen<InvestmentAccount, CustomerPF>  accountCycleOpen = new InvestmentAccountServicePF();
+                account = accountCycleOpen.openAccount(customer, balanceValue);
                 customer.addAccount(account);
             }
             default -> throw new AccountException("Error: account type not defined");
@@ -82,12 +86,12 @@ public class AccountServicePF<T extends Account, U extends CustomerPF>{
     }
 
     public void invest(Account account, BigDecimal investmentValue) throws AccountException{
-        if (account instanceof CheckingAccount){
-            accountCycleCheckingAccountPF.invest((CheckingAccount) account, investmentValue);
-        }else if (account instanceof SavingsAccount){
-            accountCycleSavingsAccountPF.invest((SavingsAccount) account, investmentValue);
+        if (account instanceof SavingsAccount){
+            //TODO: PRECISA IMPLEMENTAR A INTERFACE CORRETA (VER EXEMPLO EM CheckingAccountServicePF)
+            //accountCycleSavingsAccountPF.invest((SavingsAccount) account, investmentValue);
         }else if (account instanceof InvestmentAccount) {
-            accountCycleInvestmentAccountPF.invest((InvestmentAccount) account, investmentValue);
+            //TODO: PRECISA IMPLEMENTAR A INTERFACE CORRETA (VER EXEMPLO EM CheckingAccountServicePF)
+            //accountCycleInvestmentAccountPF.invest((InvestmentAccount) account, investmentValue);
         }else{
             throw new AccountException("Error: account type not defined");
         }

@@ -10,15 +10,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Random;
 
-public interface AccountCyclePF<T extends Account, U extends CustomerPF>{
-
-    T openAccount() throws AccountException, CustomerException;
-    T openAccount(U customer, BigDecimal balanceValue) throws AccountException, CustomerException;
-    void deposit(T account, BigDecimal depositValue) throws AccountException;
-    void invest(T account, BigDecimal investmentValue) throws AccountException;
-    void withdrawal(T account, BigDecimal withdrawValue) throws AccountException;
-    void transfer(T account, BigDecimal transferValue) throws AccountException;
-    void applyIncome(T account, BigDecimal incomeValue) throws AccountException;
+public interface AccountCyclePF<T extends Account, U extends CustomerPF>
+        extends AccountCycle<T, U> {
 
     default Integer generateAccountId(){
         Random random = new Random();
