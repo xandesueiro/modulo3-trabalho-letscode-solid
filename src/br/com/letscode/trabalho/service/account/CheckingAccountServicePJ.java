@@ -8,12 +8,28 @@ import br.com.letscode.trabalho.exception.CustomerException;
 
 import java.math.BigDecimal;
 
-class CheckingAccountServicePJ implements AccountCyclePJ<CheckingAccount, CustomerPJ> {
+class CheckingAccountServicePJ
+        implements AccountCyclePJ<CheckingAccount, CustomerPJ>,
+        AccountCycleOpen<CheckingAccount, CustomerPJ>,
+        AccountCycleFee<CheckingAccount>
+{
 
-    CheckingAccount checkingAccount = null;
 
     @Override
     public CheckingAccount openAccount(String customerDocument, DocumentType documentType) throws AccountException, CustomerException {
+        CheckingAccount checkingAccount;
+        Integer accountID = generateAccountId();
+
+        checkingAccount = new CheckingAccount();
+        checkingAccount.setId(accountID);
+        updateBalance(checkingAccount, new BigDecimal(0.00));
+
+        return checkingAccount;
+    }
+
+    @Override
+    public CheckingAccount openAccount() throws AccountException, CustomerException {
+        CheckingAccount checkingAccount;
         Integer accountID = generateAccountId();
 
         checkingAccount = new CheckingAccount();
@@ -25,6 +41,7 @@ class CheckingAccountServicePJ implements AccountCyclePJ<CheckingAccount, Custom
 
     @Override
     public CheckingAccount openAccount(CustomerPJ customerPJ, BigDecimal balanceValue) throws AccountException, CustomerException {
+        CheckingAccount checkingAccount;
         Integer accountID = generateAccountId();
 
         checkingAccount = new CheckingAccount();
@@ -37,11 +54,6 @@ class CheckingAccountServicePJ implements AccountCyclePJ<CheckingAccount, Custom
     @Override
     public void deposit(CheckingAccount account, BigDecimal depositValue) throws AccountException {
         applyIncome(account, depositValue);
-    }
-
-    @Override
-    public void invest(CheckingAccount account, BigDecimal investmentValue) throws AccountException {
-        deposit(account, investmentValue);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class PrinterDTO<T extends Account, U extends Customer> {
         sb.append("\n");
         sb.append("------------------------------------------ Resumo: Contas do cliente  ------------------------------------------\n");
         sb.append("------------------------------------------ Summary: Customer account  ------------------------------------------\n");
-        sb.append("Customer name         : ").append(customer.getName()).append("\n");
+        sb.append("Customer name         : ").append(customer.getName().toUpperCase()).append("\n");
 
         if (customer instanceof CustomerPF) {
             sb.append("Document              : ").append(((CustomerPF) customer).getCpfFormatted()).append("\n");

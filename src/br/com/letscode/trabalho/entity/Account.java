@@ -1,6 +1,7 @@
 package br.com.letscode.trabalho.entity;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 
 public abstract class Account {
@@ -37,7 +38,7 @@ public abstract class Account {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Account{");
         sb.append("id=").append(id);
-        sb.append(", accountBalance=").append(accountBalance);
+        sb.append(", accountBalance=").append(accountBalance.setScale(2, RoundingMode.UP));
         sb.append(", accountLabel='").append(accountLabel).append('\'');
         sb.append('}');
         return sb.toString();

@@ -9,12 +9,28 @@ import br.com.letscode.trabalho.exception.CustomerException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-class InvestmentAccountServicePJ implements AccountCyclePJ<InvestmentAccount, CustomerPJ> {
-
-    InvestmentAccount investmentAccount = null;
+class InvestmentAccountServicePJ
+        implements AccountCyclePJ<InvestmentAccount, CustomerPJ>,
+        AccountCycleOpen<InvestmentAccount, CustomerPJ>,
+        AccountCycleFee<InvestmentAccount> ,
+        AccountCycleIncome<InvestmentAccount>
+{
 
     @Override
     public InvestmentAccount openAccount(String customerDocument, DocumentType documentType) throws AccountException, CustomerException {
+        InvestmentAccount investmentAccount;
+        Integer accountID = generateAccountId();
+
+        investmentAccount = new InvestmentAccount();
+        investmentAccount.setId(accountID);
+        updateBalance(investmentAccount, new BigDecimal(0.00));
+
+        return investmentAccount;
+    }
+
+    @Override
+    public InvestmentAccount openAccount() throws AccountException, CustomerException {
+        InvestmentAccount investmentAccount;
         Integer accountID = generateAccountId();
 
         investmentAccount = new InvestmentAccount();
@@ -26,6 +42,7 @@ class InvestmentAccountServicePJ implements AccountCyclePJ<InvestmentAccount, Cu
 
     @Override
     public InvestmentAccount openAccount(CustomerPJ customerPJ, BigDecimal balanceValue) throws AccountException, CustomerException {
+        InvestmentAccount investmentAccount;
         Integer accountID = generateAccountId();
 
         investmentAccount = new InvestmentAccount();

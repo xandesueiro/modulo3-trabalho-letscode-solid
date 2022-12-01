@@ -1,9 +1,6 @@
 
 import br.com.letscode.trabalho.dto.PrinterDTO;
-import br.com.letscode.trabalho.entity.Account;
-import br.com.letscode.trabalho.entity.Customer;
-import br.com.letscode.trabalho.entity.CustomerPF;
-import br.com.letscode.trabalho.entity.CustomerPJ;
+import br.com.letscode.trabalho.entity.*;
 import br.com.letscode.trabalho.enums.AccountType;
 import br.com.letscode.trabalho.enums.DocumentType;
 import br.com.letscode.trabalho.exception.AccountException;
@@ -53,6 +50,10 @@ public class MainTests {
             System.out.println(customer);
 
             strCash = new BigDecimal(100.00);
+            customer = accountServicePF.openAccount(customer, AccountType.SAVINGS_ACCOUNT, strCash);
+            System.out.println(customer);
+
+            strCash = new BigDecimal(101.00);
             customer = accountServicePF.openAccount(customer, AccountType.SAVINGS_ACCOUNT, strCash);
             System.out.println(customer);
 
@@ -109,14 +110,6 @@ public class MainTests {
             BigDecimal strCashPJ = new BigDecimal(1000.00);
             customerPJ = accountServicePJ.openAccount(customerPJ, AccountType.CHECKING_ACCOUNT, strCashPJ);
             System.out.println(customerPJ);
-
-            try {
-                strCashPJ = new BigDecimal(1000.00);
-                customerPJ = accountServicePJ.openAccount(customerPJ, AccountType.SAVINGS_ACCOUNT, strCashPJ);
-                System.out.println(customerPJ);
-            }catch (CustomerException customerException){
-                System.out.println(customerException.getMessage());
-            }
 
             strCashPJ = new BigDecimal(1000.00);
             customerPJ = accountServicePJ.openAccount(customerPJ, AccountType.INVESTMENT_ACCOUNT, strCashPJ);
@@ -194,8 +187,10 @@ public class MainTests {
                     AccountServicePF accountServicePF = new AccountServicePF(validationsList);
                     accountServicePF.invest(account, value);
                 }else{
-                    AccountServicePJ accountService = new AccountServicePJ(validationsList);
-                    accountService.invest(account, value);
+                    if (account instanceof InvestmentAccount) {
+                        AccountServicePJ accountService = new AccountServicePJ(validationsList);
+                        accountService.invest((InvestmentAccount) account, value);
+                    }
                 }
 
                 BigDecimal afterInvest = account.getAccountBalance();

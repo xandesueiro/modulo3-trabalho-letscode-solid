@@ -19,7 +19,6 @@ import java.util.List;
 
 public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
     AccountCyclePJ<CheckingAccount, CustomerPJ> accountCycleCheckingAccountPJ = new CheckingAccountServicePJ();
-    AccountCyclePJ<SavingsAccount, CustomerPJ> accountCycleSavingsAccountPJ = new SavingsAccountServicePJ();
     AccountCyclePJ<InvestmentAccount, CustomerPJ> accountCycleInvestmentAccountPJ = new InvestmentAccountServicePJ();
 
     HashMap<String, AccountValidations> validationList;
@@ -35,7 +34,8 @@ public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
         CheckingAccount checkingAccount;
         Customer customer;
 
-        checkingAccount =  accountCycleCheckingAccountPJ.openAccount(customerDocument, documentType);
+        AccountCycleOpen<CheckingAccount, CustomerPJ>  accountCycleOpen = new CheckingAccountServicePJ();
+        checkingAccount =  accountCycleOpen.openAccount(customerDocument, documentType);
 
         List<CustomerValidations> customerValidationList = new ArrayList<>();
         customerValidationList.add(new CustomerLengthCNPJValidation());
@@ -52,14 +52,13 @@ public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
         Account account;
         switch (accountType){
             case CHECKING_ACCOUNT -> {
-                account = accountCycleCheckingAccountPJ.openAccount(customer, balanceValue);
+                AccountCycleOpen<CheckingAccount, CustomerPJ>  accountCycleOpen = new CheckingAccountServicePJ();
+                account = accountCycleOpen.openAccount(customer, balanceValue);
                 customer.addAccount(account);
             }
-            case SAVINGS_ACCOUNT -> {
-                throw new CustomerException("A Customer PJ can't have a Savings Account");
-            }
             case INVESTMENT_ACCOUNT -> {
-                account = accountCycleInvestmentAccountPJ.openAccount(customer, balanceValue);
+                AccountCycleOpen<InvestmentAccount, CustomerPJ> accountCycleOpen = new InvestmentAccountServicePJ();
+                account = accountCycleOpen.openAccount(customer, balanceValue);
                 customer.addAccount(account);
             }
             default -> throw new AccountException("Error: account type not defined");
@@ -70,8 +69,6 @@ public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
     public void deposit(T account, BigDecimal depositValue) throws AccountException{
         if (account instanceof CheckingAccount){
             accountCycleCheckingAccountPJ.deposit((CheckingAccount) account, depositValue);
-        }else if (account instanceof SavingsAccount){
-            accountCycleSavingsAccountPJ.deposit((SavingsAccount) account, depositValue);
         }else if (account instanceof InvestmentAccount) {
             accountCycleInvestmentAccountPJ.deposit((InvestmentAccount) account, depositValue);
         }else{
@@ -79,16 +76,9 @@ public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
         }
     }
 
-    public void invest(T account, BigDecimal investmentValue) throws AccountException{
-        if (account instanceof CheckingAccount){
-            accountCycleCheckingAccountPJ.invest((CheckingAccount) account, investmentValue);
-        }else if (account instanceof SavingsAccount){
-            accountCycleSavingsAccountPJ.invest((SavingsAccount) account, investmentValue);
-        }else if (account instanceof InvestmentAccount) {
-            accountCycleInvestmentAccountPJ.invest((InvestmentAccount) account, investmentValue);
-        }else{
-            throw new AccountException("Error: account type not defined");
-        }
+    public void invest(InvestmentAccount account, BigDecimal investmentValue) throws AccountException{
+        AccountCycleIncome accountCycleIncome = new InvestmentAccountServicePJ();
+        accountCycleIncome.invest(account, investmentValue);
     }
 
     public void withdrawal(T account, BigDecimal withdrawValue) throws AccountException{
@@ -96,8 +86,6 @@ public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
 
         if (account instanceof CheckingAccount){
             accountCycleCheckingAccountPJ.withdrawal((CheckingAccount) account, withdrawValue);
-        }else if (account instanceof SavingsAccount){
-            accountCycleSavingsAccountPJ.withdrawal((SavingsAccount) account, withdrawValue);
         }else if (account instanceof InvestmentAccount) {
             accountCycleInvestmentAccountPJ.withdrawal((InvestmentAccount) account, withdrawValue);
         }else{
@@ -110,8 +98,6 @@ public class AccountServicePJ  <T extends Account, U extends CustomerPJ>{
 
         if (account instanceof CheckingAccount){
             accountCycleCheckingAccountPJ.transfer((CheckingAccount) account, transferValue);
-        }else if (account instanceof SavingsAccount){
-            accountCycleSavingsAccountPJ.transfer((SavingsAccount) account, transferValue);
         }else if (account instanceof InvestmentAccount) {
             accountCycleInvestmentAccountPJ.transfer((InvestmentAccount) account, transferValue);
         }else{

@@ -48,8 +48,9 @@ class CheckingAccountServicePF
     }
 
     @Override
-    public void deposit(CheckingAccount account, BigDecimal depositValue) throws AccountException {
-        account.getAccountBalance().add(depositValue);
+    public void deposit(CheckingAccount checkingAccount, BigDecimal depositValue) throws AccountException {
+        BigDecimal newBalanceValue = checkingAccount.getAccountBalance().add(depositValue);
+        checkingAccount.setAccountBalance(newBalanceValue);
     }
 
     @Override
