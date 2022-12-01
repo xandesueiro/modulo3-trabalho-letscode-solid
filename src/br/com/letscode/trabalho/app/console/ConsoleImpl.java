@@ -13,6 +13,7 @@ import br.com.letscode.trabalho.validation.account.AccountAvailableBalanceValida
 import br.com.letscode.trabalho.validation.account.AccountPositiveBalanceValidation;
 import br.com.letscode.trabalho.validation.account.AccountValidations;
 
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -137,117 +138,76 @@ public class ConsoleImpl implements Menus<HashMap<Integer, Menu>, Customer> {
 
     private void deposit() throws CustomerException, AccountException {
         MenuOptionDepositConsole menuOptionDepositConsole = new MenuOptionDepositConsole(scanner);
-        System.out.printf("Account ID       : ");
-        String accountID = scanner.nextLine();
-        Integer id = null;
-        if (accountID != null ){
-            try {
-                id = Integer.valueOf(accountID);
-                if(!customer.getAccounts().containsKey(id)){
-                    throw new AccountException("Invalid account id!");
-                }
-            }catch (NumberFormatException numberFormatException){
-                throw new AccountException("Invalid account id!");
-            }
+
+        QuizAccountCycle quizAccountCycle = quizAccount();
+
+        if(!customer.getAccounts().containsKey(quizAccountCycle.getId())){
+            throw new AccountException("Invalid account id!");
         }
 
-        System.out.printf("Value            : R$ ");
-        String value = scanner.nextLine();
-        BigDecimal valueToInputAccount = null;
-        if (value != null ){
-            try {
-                valueToInputAccount = new BigDecimal(value);
-            }catch (NumberFormatException numberFormatException){
-                throw new AccountException("Invalid value!");
-            }
-        }
-        menuOptionDepositConsole.transaction(customer, id, valueToInputAccount, validationsList);
+        menuOptionDepositConsole.transaction(
+                customer,
+                quizAccountCycle.getId(),
+                quizAccountCycle.getValue(),
+                validationsList);
     }
 
     private void transfer() throws CustomerException, AccountException {
         MenuOptionTransferConsole menuOptionTransferConsole = new MenuOptionTransferConsole(scanner);
-        System.out.printf("Account ID       : ");
-        String accountID = scanner.nextLine();
-        Integer id = null;
-        if (accountID != null ){
-            try {
-                id = Integer.valueOf(accountID);
-                if(!customer.getAccounts().containsKey(id)){
-                    throw new AccountException("Invalid account id!");
-                }
-            }catch (NumberFormatException numberFormatException){
-                throw new AccountException("Invalid account id!");
-            }
+
+        QuizAccountCycle quizAccountCycle = quizAccount();
+
+        if(!customer.getAccounts().containsKey(quizAccountCycle.getId())){
+            throw new AccountException("Invalid account id!");
         }
 
-        System.out.printf("Value            : R$ ");
-        String value = scanner.nextLine();
-        BigDecimal valueToInputAccount = null;
-        if (value != null ){
-            try {
-                valueToInputAccount = new BigDecimal(value);
-            }catch (NumberFormatException numberFormatException){
-                throw new AccountException("Invalid value!");
-            }
-        }
-        menuOptionTransferConsole.transaction(customer, id, valueToInputAccount, validationsList);
+        menuOptionTransferConsole.transaction(
+                customer,
+                quizAccountCycle.getId(),
+                quizAccountCycle.getValue(),
+                validationsList);
+
     }
 
     private void withdrawal() throws CustomerException, AccountException {
         MenuOptionWithdrawalConsole menuOptionWithdrawalConsole = new MenuOptionWithdrawalConsole(scanner);
-        System.out.printf("Account ID       : ");
-        String accountID = scanner.nextLine();
-        Integer id = null;
-        if (accountID != null ){
-            try {
-                id = Integer.valueOf(accountID);
-                if(!customer.getAccounts().containsKey(id)){
-                    throw new AccountException("Invalid account id!");
-                }
-            }catch (NumberFormatException numberFormatException){
-                throw new AccountException("Invalid account id!");
-            }
+
+        QuizAccountCycle quizAccountCycle = quizAccount();
+
+        if(!customer.getAccounts().containsKey(quizAccountCycle.getId())){
+            throw new AccountException("Invalid account id!");
         }
 
-        System.out.printf("Value            : R$ ");
-        String value = scanner.nextLine();
-        BigDecimal valueToInputAccount = null;
-        if (value != null ){
-            try {
-                valueToInputAccount = new BigDecimal(value);
-            }catch (NumberFormatException numberFormatException){
-                throw new AccountException("Invalid value!");
-            }
-        }
-        menuOptionWithdrawalConsole.transaction(customer, id, valueToInputAccount, validationsList);
+        menuOptionWithdrawalConsole.transaction(
+                customer,
+                quizAccountCycle.getId(),
+                quizAccountCycle.getValue(),
+                validationsList);
     }
 
     private void invest() throws CustomerException, AccountException {
         MenuOptionInvestConsole menuOptionInvestConsole = new MenuOptionInvestConsole(scanner);
-        System.out.printf("Account ID       : ");
-        String accountID = scanner.nextLine();
-        Integer id = null;
-        if (accountID != null ){
-            try {
-                id = Integer.valueOf(accountID);
-                if(!customer.getAccounts().containsKey(id)){
-                    throw new AccountException("Invalid account id!");
-                }
-            }catch (NumberFormatException numberFormatException){
-                throw new AccountException("Invalid account id!");
-            }
+
+        QuizAccountCycle quizAccountCycle = quizAccount();
+
+        if(!customer.getAccounts().containsKey(quizAccountCycle.getId())){
+            throw new AccountException("Invalid account id!");
         }
 
+        menuOptionInvestConsole.transaction(
+                customer,
+                quizAccountCycle.getId(),
+                quizAccountCycle.getValue(),
+                validationsList);
+    }
+
+    private QuizAccountCycle quizAccount() throws AccountException{
+        System.out.printf("Account ID       : ");
+        String accountID = scanner.nextLine();
         System.out.printf("Value            : R$ ");
         String value = scanner.nextLine();
-        BigDecimal valueToInputAccount = null;
-        if (value != null ){
-            try {
-                valueToInputAccount = new BigDecimal(value);
-            }catch (NumberFormatException numberFormatException){
-                throw new AccountException("Invalid value!");
-            }
-        }
-        menuOptionInvestConsole.transaction(customer, id, valueToInputAccount, validationsList);
+
+        QuizAccountCycle quizCycleAccount = new QuizAccountCycle(accountID, value);
+        return quizCycleAccount;
     }
 }
