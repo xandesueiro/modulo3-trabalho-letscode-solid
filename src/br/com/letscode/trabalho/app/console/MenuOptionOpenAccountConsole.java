@@ -32,8 +32,18 @@ class MenuOptionOpenAccountConsole implements MenuOptionOpenAccount {
         String name = answer();
         System.out.printf("Are you using CPF or CNPJ?  : ");
         String documentType = answer();
+        if (!documentType.equalsIgnoreCase(ConstantUtils.DOCUMENT_CPF)
+                && !documentType.equalsIgnoreCase(ConstantUtils.DOCUMENT_CNPJ)){
+            System.out.println("It seems not to be a valid document type. Please restart.");
+            menuOption_OpenAccount_FirstTime(validationsList);
+        }
+
         System.out.printf("Type your document number   : ");
         String documentNumber = answer();
+        if (!isNumeric(documentNumber)){
+            System.out.println("The document needs to have only numbers. Please restart");
+            menuOption_OpenAccount_FirstTime(validationsList);
+        }
 
         Customer customer = null;
         if (documentType.equalsIgnoreCase(ConstantUtils.DOCUMENT_CPF)) {
@@ -116,5 +126,14 @@ class MenuOptionOpenAccountConsole implements MenuOptionOpenAccount {
     @Override
     public String answer() {
         return scanner.nextLine();
+    }
+
+    private boolean isNumeric(String s)
+    {
+        if (s == null || s.equals("")) {
+            return false;
+        }
+
+        return s.chars().allMatch(Character::isDigit);
     }
 }

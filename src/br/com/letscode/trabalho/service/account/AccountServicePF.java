@@ -87,11 +87,12 @@ public class AccountServicePF<T extends Account, U extends CustomerPF>{
 
     public void invest(Account account, BigDecimal investmentValue) throws AccountException{
         if (account instanceof SavingsAccount){
-            //TODO: PRECISA IMPLEMENTAR A INTERFACE CORRETA (VER EXEMPLO EM CheckingAccountServicePF)
-            //accountCycleSavingsAccountPF.invest((SavingsAccount) account, investmentValue);
+            AccountCycleIncome accountCycleIncome = new SavingsAccountServicePF();
+            accountCycleIncome.invest(account, investmentValue);
         }else if (account instanceof InvestmentAccount) {
-            //TODO: PRECISA IMPLEMENTAR A INTERFACE CORRETA (VER EXEMPLO EM CheckingAccountServicePF)
-            //accountCycleInvestmentAccountPF.invest((InvestmentAccount) account, investmentValue);
+            AccountCycleIncome accountCycleIncome = new InvestmentAccountServicePF();
+            accountCycleIncome.invest(account, investmentValue);
+
         }else{
             throw new AccountException("Error: account type not defined");
         }

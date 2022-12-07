@@ -13,8 +13,6 @@ import br.com.letscode.trabalho.validation.account.AccountAvailableBalanceValida
 import br.com.letscode.trabalho.validation.account.AccountPositiveBalanceValidation;
 import br.com.letscode.trabalho.validation.account.AccountValidations;
 
-
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
@@ -51,6 +49,8 @@ public class ConsoleImpl implements Menus<HashMap<Integer, Menu>, Customer> {
             }
         }else {
             Menu menu = this.menus.get(1);
+            sb.append(menu.getIdMenu()).append(" - ").append(menu.getDescriptionMenu()).append("\n");
+            menu = this.menus.get(99);
             sb.append(menu.getIdMenu()).append(" - ").append(menu.getDescriptionMenu()).append("\n");
         }
         return sb;
@@ -141,10 +141,6 @@ public class ConsoleImpl implements Menus<HashMap<Integer, Menu>, Customer> {
 
         QuizAccountCycle quizAccountCycle = quizAccount();
 
-        if(!customer.getAccounts().containsKey(quizAccountCycle.getId())){
-            throw new AccountException("Invalid account id!");
-        }
-
         menuOptionDepositConsole.transaction(
                 customer,
                 quizAccountCycle.getId(),
@@ -156,10 +152,6 @@ public class ConsoleImpl implements Menus<HashMap<Integer, Menu>, Customer> {
         MenuOptionTransferConsole menuOptionTransferConsole = new MenuOptionTransferConsole(scanner);
 
         QuizAccountCycle quizAccountCycle = quizAccount();
-
-        if(!customer.getAccounts().containsKey(quizAccountCycle.getId())){
-            throw new AccountException("Invalid account id!");
-        }
 
         menuOptionTransferConsole.transaction(
                 customer,
@@ -174,10 +166,6 @@ public class ConsoleImpl implements Menus<HashMap<Integer, Menu>, Customer> {
 
         QuizAccountCycle quizAccountCycle = quizAccount();
 
-        if(!customer.getAccounts().containsKey(quizAccountCycle.getId())){
-            throw new AccountException("Invalid account id!");
-        }
-
         menuOptionWithdrawalConsole.transaction(
                 customer,
                 quizAccountCycle.getId(),
@@ -190,10 +178,6 @@ public class ConsoleImpl implements Menus<HashMap<Integer, Menu>, Customer> {
 
         QuizAccountCycle quizAccountCycle = quizAccount();
 
-        if(!customer.getAccounts().containsKey(quizAccountCycle.getId())){
-            throw new AccountException("Invalid account id!");
-        }
-
         menuOptionInvestConsole.transaction(
                 customer,
                 quizAccountCycle.getId(),
@@ -204,6 +188,10 @@ public class ConsoleImpl implements Menus<HashMap<Integer, Menu>, Customer> {
     private QuizAccountCycle quizAccount() throws AccountException{
         System.out.printf("Account ID       : ");
         String accountID = scanner.nextLine();
+        if(!customer.getAccounts().containsKey(Integer.parseInt(accountID))){
+            throw new AccountException("Invalid account id!");
+        }
+
         System.out.printf("Value            : R$ ");
         String value = scanner.nextLine();
 
